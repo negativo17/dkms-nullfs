@@ -3,7 +3,7 @@
 
 Name:       dkms-%{dkms_name}
 Version:    0.17
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    A virtual file system that behaves like /dev/null
 License:    GPLv3+
 URL:        https://github.com/abbbi/nullfsvfs
@@ -12,6 +12,7 @@ BuildArch:  noarch
 Source0:    %{url}/archive/v%{version}.tar.gz#/nullfsvfs-%{version}.tar.gz
 Source1:    %{name}.conf
 Source2:    dkms-no-weak-modules.conf
+Patch0:     https://github.com/abbbi/nullfsvfs/commit/63661607ded4e3ee0ba35cf50e1166a2b203daeb.patch
 
 BuildRequires:  sed
 
@@ -64,6 +65,9 @@ dkms remove -m %{dkms_name} -v %{version} -q --all || :
 %endif
 
 %changelog
+* Mon Jun 03 2024 Simone Caronni <negativo17@gmail.com> - 0.17-2
+- Add patch for EL 9.4 kernel backports.
+
 * Wed Nov 29 2023 Simone Caronni <negativo17@gmail.com> - 0.17-1
 - First build.
 
