@@ -3,7 +3,7 @@
 
 Name:       dkms-%{dkms_name}
 Version:    0.17
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    A virtual file system that behaves like /dev/null
 License:    GPLv3+
 URL:        https://github.com/abbbi/nullfsvfs
@@ -48,14 +48,14 @@ install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/dkms/%{dkms_name}.con
 %endif
 
 %post
-dkms add -m %{dkms_name} -v %{version} -q || :
+dkms add -m %{dkms_name} -v %{version} -q --rpm_safe_upgrade || :
 # Rebuild and make available for the currently running kernel:
 dkms build -m %{dkms_name} -v %{version} -q || :
 dkms install -m %{dkms_name} -v %{version} -q --force || :
 
 %preun
 # Remove all versions from DKMS registry:
-dkms remove -m %{dkms_name} -v %{version} -q --all || :
+dkms remove -m %{dkms_name} -v %{version} -q --all --rpm_safe_upgrade || :
 
 %files
 %{_usrsrc}/%{dkms_name}-%{version}
@@ -64,6 +64,9 @@ dkms remove -m %{dkms_name} -v %{version} -q --all || :
 %endif
 
 %changelog
+* Wed Oct 16 2024 Simone Caronni <negativo17@gmail.com> - 0.17-2
+- Do not uninstall in preun scriptlet in case of an upgrade.
+
 * Wed Nov 29 2023 Simone Caronni <negativo17@gmail.com> - 0.17-1
 - First build.
 
