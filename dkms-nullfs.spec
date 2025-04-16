@@ -2,8 +2,8 @@
 %global dkms_name nullfs
 
 Name:       dkms-%{dkms_name}
-Version:    0.17
-Release:    2%{?dist}
+Version:    0.18
+Release:    1%{?dist}
 Summary:    A virtual file system that behaves like /dev/null
 License:    GPLv3+
 URL:        https://github.com/abbbi/nullfsvfs
@@ -11,7 +11,10 @@ BuildArch:  noarch
 
 Source0:    %{url}/archive/v%{version}.tar.gz#/nullfsvfs-%{version}.tar.gz
 Source1:    %{name}.conf
-Source2:    dkms-no-weak-modules.conf
+%if 0%{?rhel} == 9
+# https://github.com/abbbi/nullfsvfs/commit/63661607ded4e3ee0ba35cf50e1166a2b203daeb
+Patch0:     nullfs-el9.patch
+%endif
 
 BuildRequires:  sed
 
@@ -42,11 +45,6 @@ sed -i -e 's/__VERSION_STRING/%{version}/g' dkms.conf
 mkdir -p %{buildroot}%{_usrsrc}/%{dkms_name}-%{version}/
 cp -fr nullfs.c Makefile dkms.conf %{buildroot}%{_usrsrc}/%{dkms_name}-%{version}/
 
-%if 0%{?fedora}
-# Do not enable weak modules support in Fedora (no kABI):
-install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/dkms/%{dkms_name}.conf
-%endif
-
 %post
 dkms add -m %{dkms_name} -v %{version} -q --rpm_safe_upgrade || :
 # Rebuild and make available for the currently running kernel:
@@ -59,11 +57,12 @@ dkms remove -m %{dkms_name} -v %{version} -q --all --rpm_safe_upgrade || :
 
 %files
 %{_usrsrc}/%{dkms_name}-%{version}
-%if 0%{?fedora}
-%{_sysconfdir}/dkms/%{dkms_name}.conf
-%endif
 
 %changelog
+* Wed Apr 16 2025 Simone Caronni <negativo17@gmail.com> - 0.18-1
+- Update to 0.18.0.
+- Weak modules are already disabled in Fedora.
+
 * Wed Oct 16 2024 Simone Caronni <negativo17@gmail.com> - 0.17-2
 - Do not uninstall in preun scriptlet in case of an upgrade.
 
