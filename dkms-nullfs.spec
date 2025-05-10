@@ -3,7 +3,7 @@
 
 Name:       dkms-%{dkms_name}
 Version:    0.18
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    A virtual file system that behaves like /dev/null
 License:    GPLv3+
 URL:        https://github.com/abbbi/nullfsvfs
@@ -59,6 +59,9 @@ dkms remove -m %{dkms_name} -v %{version} -q --all --rpm_safe_upgrade || :
 %{_usrsrc}/%{dkms_name}-%{version}
 
 %changelog
+* Sat May 10 2025 Simone Caronni <negativo17@gmail.com> - 0.18-2
+- Update dkms.conf file.
+
 * Wed Apr 16 2025 Simone Caronni <negativo17@gmail.com> - 0.18-1
 - Update to 0.18.0.
 - Weak modules are already disabled in Fedora.
